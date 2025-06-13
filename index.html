@@ -585,23 +585,23 @@
     </div>
 
     <script>
-        // Course navigation
-        document.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', () => {
-                if (card.classList.contains('locked')) {
-                    return; // Don't navigate to locked courses
-                }
-                
-                const course = card.dataset.course;
-                
-                // In a real app, this would navigate to the course detail page
-                // For now, we'll just show an alert
-                alert(`Navigating to ${course} course detail page...\n\nNext step: Create ${course}-course.html`);
-                
-                // This would actually be:
-                // window.location.href = `${course}-course.html`;
-            });
-        });
+       // Course navigation
+document.querySelectorAll('.course-card').forEach(card => {
+    card.addEventListener('click', () => {
+        if (card.classList.contains('locked')) {
+            return; // Don't navigate to locked courses
+        }
+        
+        const course = card.dataset.course;
+        
+        // Navigate to the course detail page
+        if (course === 'api') {
+            window.location.href = 'api-course.html';
+        } else {
+            alert(`${course} course coming soon!`);
+        }
+    });
+});
 
         // Initialize user stats (in a real app, this would come from a database)
         let userStats = {
