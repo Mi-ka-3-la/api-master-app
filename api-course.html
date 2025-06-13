@@ -1,0 +1,676 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Fundamentals - Technical BA Mastery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .course-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            background: #f8fafc;
+            padding: 16px 40px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .breadcrumb a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        /* Course Header */
+        .course-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .course-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 24px;
+        }
+
+        .course-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .course-description {
+            font-size: 20px;
+            opacity: 0.9;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* Course Content */
+        .course-content {
+            padding: 50px 40px;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .objectives-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 48px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .objectives-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .objectives-icon {
+            background: #4f46e5;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .objectives-list {
+            list-style: none;
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .objectives-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 8px;
+        }
+
+        .objectives-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Modules Grid */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .module-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 28px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: #4f46e5;
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.1);
+        }
+
+        .module-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .module-card.locked:hover {
+            transform: none;
+            border-color: #e2e8f0;
+            box-shadow: none;
+        }
+
+        .module-card.completed {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-right: 16px;
+        }
+
+        .module-icon.context { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+        .module-icon.architecture { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .module-icon.tools { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); }
+        .module-icon.contracts { background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+        .module-icon.analysis { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+        .module-icon.practice { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+
+        .module-info {
+            flex: 1;
+        }
+
+        .module-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .module-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .module-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .module-concepts {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .module-status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .module-status.available {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .module-status.locked {
+            background: #f1f5f9;
+            color: #94a3b8;
+        }
+
+        .module-status.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .module-card.locked .lock-overlay {
+            display: flex;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 40px auto 0;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        /* Key Questions Highlight */
+        .key-questions {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+
+        .key-questions-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .key-questions-icon {
+            background: #f59e0b;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        .questions-list {
+            list-style: none;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .questions-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .questions-list li:before {
+            content: "?";
+            position: absolute;
+            left: 0;
+            color: #f59e0b;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(245, 158, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .course-header {
+                padding: 40px 20px;
+            }
+            
+            .course-title {
+                font-size: 32px;
+            }
+            
+            .course-content {
+                padding: 30px 20px;
+            }
+            
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .breadcrumb {
+                padding: 16px 20px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .module-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+        .module-card:nth-child(5) { animation-delay: 0.5s; }
+        .module-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="course-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <a href="index.html">Course Catalog</a>
+            <span class="breadcrumb-separator">›</span>
+            <span>API Fundamentals</span>
+        </nav>
+
+        <!-- Course Header -->
+        <header class="course-header">
+            <div class="course-icon">🔗</div>
+            <h1 class="course-title">API Fundamentals</h1>
+            <p class="course-description">
+                Understand what APIs really are, why they exist, and how they fit into modern systems. 
+                Master the tools and techniques every Technical BA needs for API analysis.
+            </p>
+            
+            <div class="course-stats">
+                <div class="stat-item">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Modules</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">~3h</span>
+                    <span class="stat-label">Total Time</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">Beginner</span>
+                    <span class="stat-label">Level</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Course Content -->
+        <main class="course-content">
+            <!-- Objectives -->
+            <section class="objectives-section">
+                <h2 class="objectives-title">
+                    <div class="objectives-icon">🎯</div>
+                    What You'll Master
+                </h2>
+                <ul class="objectives-list">
+                    <li>Understand what APIs actually ARE (beyond analogies) and why they were created</li>
+                    <li>Know where APIs "live" in system architecture and what they contain</li>
+                    <li>Identify when applications need APIs vs when they don't</li>
+                    <li>Master essential API testing tools (Postman, curl, Swagger)</li>
+                    <li>Read and analyze API contracts and documentation</li>
+                    <li>Perform API analysis tasks that Technical BAs encounter daily</li>
+                </ul>
+            </section>
+
+            <!-- Key Questions We'll Answer -->
+            <div class="key-questions">
+                <h3 class="key-questions-title">
+                    <div class="key-questions-icon">❓</div>
+                    Key Questions We'll Answer
+                </h3>
+                <ul class="questions-list">
+                    <li>What exactly IS an API? (Not customer-server analogies, but actual technical reality)</li>
+                    <li>Why were APIs created? What problem do they solve?</li>
+                    <li>Where do APIs "live"? Are they files? Code? Servers?</li>
+                    <li>Does every application require an API? When do you need one?</li>
+                    <li>How do APIs fit in system architecture? (Client-server, server-server, database communication)</li>
+                    <li>What's actually inside an API? SQL queries? Business logic? Data transformations?</li>
+                </ul>
+            </div>
+
+            <!-- Modules -->
+            <section>
+                <h2 class="section-title">Course Modules</h2>
+                
+                <div class="modules-grid">
+                    <!-- Module 1: What is an API Really? -->
+                    <div class="module-card" data-module="1">
+                        <div class="module-header">
+                            <div class="module-icon context">🤔</div>
+                            <div class="module-info">
+                                <h3 class="module-title">What is an API Really?</h3>
+                                <p class="module-description">
+                                    Beyond analogies: understand what APIs actually are, why they exist, and what problem they solve in software systems.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">5 Key Concepts</span>
+                            <span class="module-status available">Start Here</span>
+                        </div>
+                    </div>
+
+                    <!-- Module 2: API Architecture & Context -->
+                    <div class="module-card locked" data-module="2">
+                        <div class="module-header">
+                            <div class="module-icon architecture">🏗️</div>
+                            <div class="module-info">
+                                <h3 class="module-title">API Architecture & Context</h3>
+                                <p class="module-description">
+                                    Where APIs live, how they fit in system architecture, and different communication patterns (client-server, server-server).
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">6 Key Concepts</span>
+                            <span class="module-status locked">Locked</span>
+                        </div>
+                        <div class="lock-overlay">
+                            <span>🔒</span>
+                            <span>Complete Module 1</span>
+                        </div>
+                    </div>
+
+                    <!-- Module 3: Essential API Tools -->
+                    <div class="module-card locked" data-module="3">
+                        <div class="module-header">
+                            <div class="module-icon tools">🛠️</div>
+                            <div class="module-info">
+                                <h3 class="module-title">Essential API Tools</h3>
+                                <p class="module-description">
+                                    Master Postman, curl, and Swagger - the tools every Technical BA needs for API exploration and testing.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">4 Key Tools</span>
+                            <span class="module-status locked">Locked</span>
+                        </div>
+                        <div class="lock-overlay">
+                            <span>🔒</span>
+                            <span>Complete Module 2</span>
+                        </div>
+                    </div>
+
+                    <!-- Module 4: API Contracts & Documentation -->
+                    <div class="module-card locked" data-module="4">
+                        <div class="module-header">
+                            <div class="module-icon contracts">📋</div>
+                            <div class="module-info">
+                                <h3 class="module-title">API Contracts & Documentation</h3>
+                                <p class="module-description">
+                                    Read OpenAPI specs, understand request/response structures, and analyze API contracts like a pro.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">5 Key Skills</span>
+                            <span class="module-status locked">Locked</span>
+                        </div>
+                        <div class="lock-overlay">
+                            <span>🔒</span>
+                            <span>Complete Module 3</span>
+                        </div>
+                    </div>
+
+                    <!-- Module 5: API Analysis for BAs -->
+                    <div class="module-card locked" data-module="5">
+                        <div class="module-header">
+                            <div class="module-icon analysis">📊</div>
+                            <div class="module-info">
+                                <h3 class="module-title">API Analysis for BAs</h3>
+                                <p class="module-description">
+                                    Learn the specific analysis tasks Technical BAs perform: impact analysis, dependency mapping, requirement validation.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">7 BA Techniques</span>
+                            <span class="module-status locked">Locked</span>
+                        </div>
+                        <div class="lock-overlay">
+                            <span>🔒</span>
+                            <span>Complete Module 4</span>
+                        </div>
+                    </div>
+
+                    <!-- Module 6: Real-World Practice -->
+                    <div class="module-card locked" data-module="6">
+                        <div class="module-header">
+                            <div class="module-icon practice">🎯</div>
+                            <div class="module-info">
+                                <h3 class="module-title">Real-World Practice</h3>
+                                <p class="module-description">
+                                    Apply everything you've learned to real API scenarios. Complete projects that mirror actual BA work.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="module-meta">
+                            <span class="module-concepts">3 Projects</span>
+                            <span class="module-status locked">Locked</span>
+                        </div>
+                        <div class="lock-overlay">
+                            <span>🔒</span>
+                            <span>Complete Module 5</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="start-button" onclick="startFirstModule()">
+                    Start Module 1: What is an API Really?
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Module navigation
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', () => {
+                if (card.classList.contains('locked')) {
+                    return; // Don't navigate to locked modules
+                }
+                
+                const module = card.dataset.module;
+                navigateToModule(module);
+            });
+        });
+
+        function navigateToModule(moduleId) {
+            // For now, we'll show an alert. In real implementation:
+            // window.location.href = `api-module-${moduleId}.html`;
+            
+            if (moduleId === '1') {
+                alert(`Starting Module 1: What is an API Really?\n\nNext step: Create api-module-1.html with your context questions answered!`);
+            } else {
+                alert(`Module ${moduleId} will be unlocked after completing previous modules.`);
+            }
+        }
+
+        function startFirstModule() {
+            navigateToModule('1');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('API Fundamentals course loaded! 🔗');
+            console.log('Starting with essential context questions about what APIs really are.');
+        });
+    </script>
+</body>
+</html>
